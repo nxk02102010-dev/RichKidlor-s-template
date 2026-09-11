@@ -1,2 +1,2 @@
 # RichKidlor-s-template
-This is my template code for CP
+This is my template for CP
