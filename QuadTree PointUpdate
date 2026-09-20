@@ -1,0 +1,55 @@
+struct TwoDimensionSegmentTree{
+        long long t[4 * MAX][4 * MAX];
+        void PointUpdate(int tx,int ty,long long val,int vy,int vx,int yl,int yr,int xl,int xr){
+                if(yl == yr && xl == xr){
+                        t[vy][vx] = val;
+                        return;
+                }
+                int ym = (yl + yr) >> 1;
+                int xm = (xl + xr) >> 1;
+                if(ty <= ym){
+                        if(tx <= xm){
+                                PointUpdate(tx,ty,val,vy << 1,vx << 1,yl,ym,xl,xm);
+                        }
+                        else{
+                                PointUpdate(tx,ty,val,vy << 1,vx << 1 | 1,yl,ym,xm + 1,xr);
+                        }
+                }
+                else{
+                        if(tx <= xm){
+                                PointUpdate(tx,ty,val,vy << 1 | 1,vx << 1,ym + 1,yr,xl,xm);
+                        }
+                        else{
+                                PointUpdate(tx,ty,val,vy << 1 | 1,vx << 1 | 1,ym + 1,yr,xm + 1,xr);
+                        }
+                }
+                t[vy][vx] = 0;
+                for(int i = 0;i < 2;i++) for(int j = 0;j < 2;j++){
+                        t[vy][vx] += t[(vy << 1) + i][(vx << 1) + j];
+                }
+        }
+
+        long long Get(int txl,int txr,int tyl,int tyr,int vy,int vx,int yl,int yr,int xl,int xr){
+                if(txl <= xl && xr <= txr && tyl <= yl && yr <= tyr) return t[vy][vx];
+                long long ret = 0;
+                int ym = (yl + yr) >> 1;
+                int xm = (xl + xr) >> 1;
+                if(tyl <= ym){
+                        if(txl <= xm){
+                                ret += Get(txl,txr,tyl,tyr,vy << 1,vx << 1,yl,ym,xl,xm);
+                        }
+                        if(txr > xm){
+                                ret += Get(txl,txr,tyl,tyr,vy << 1,vx << 1 | 1,yl,ym,xm + 1,xr);
+                        }
+                }
+                if(tyr > ym){
+                        if(txl <= xm){
+                                ret += Get(txl,txr,tyl,tyr,vy << 1 | 1,vx << 1,ym + 1,yr,xl,xm);
+                        }
+                        if(txr > xm){
+                                ret += Get(txl,txr,tyl,tyr,vy << 1 | 1,vx << 1 | 1,ym + 1,yr,xm + 1,xr);
+                        }
+                }
+                return ret;
+        }
+} Seg;
